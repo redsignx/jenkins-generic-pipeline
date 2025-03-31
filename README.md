@@ -15,7 +15,37 @@ jenkins 的流水线需要使用用户友好的 configuration 配置进行设置
 
 项目的整体架构如下图所示：
 
-![系统架构图](docs/architecture.drawio)
+```mermaid
+graph TD
+    subgraph 用户配置层
+        A[pipeline-config.json]
+        A1[用户通过 JSON 配置定义流水线]
+    end
+
+    subgraph Jenkins 配置层
+        B[Jenkinsfile]
+        B1[Jenkins 入口文件]
+    end
+
+    subgraph 共享库层
+        C[loadPipeline.groovy]
+        C1[核心解析和执行逻辑]
+    end
+
+    subgraph 执行引擎层
+        D[流水线执行引擎]
+        D1[执行具体的流水线步骤]
+    end
+
+    A --> B
+    B --> C
+    C --> D
+
+    A1 --> A
+    B1 --> B
+    C1 --> C
+    D1 --> D
+```
 
 系统分为四个主要层次：
 
