@@ -1,0 +1,46 @@
+{
+  "name": "示例流水线",
+  "description": "这是一个示例流水线配置",
+  "shared_libraries": [
+    {
+      "name": "custom-library",
+      "version": "main"
+    }
+  ],
+  "stages": [
+    {
+      "name": "并行构建阶段",
+      "parallel": true,
+      "node": "linux",
+      "steps": [
+        {
+          "name": "构建前端",
+          "type": "shell",
+          "command": "npm install && npm run build"
+        },
+        {
+          "name": "构建后端",
+          "type": "shell",
+          "command": "mvn clean package"
+        }
+      ]
+    },
+    {
+      "name": "测试阶段",
+      "parallel": false,
+      "node": "windows",
+      "steps": [
+        {
+          "name": "运行测试",
+          "type": "shared_library",
+          "library": "custom-library",
+          "function": "runTests",
+          "parameters": {
+            "test_type": "unit",
+            "coverage_threshold": 80
+          }
+        }
+      ]
+    }
+  ]
+} 
