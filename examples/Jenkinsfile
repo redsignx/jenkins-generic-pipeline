@@ -1,0 +1,46 @@
+#!/usr/bin/env groovy
+
+@Library('jenkins-generic-pipeline') _
+
+pipeline {
+    agent any
+    
+    stages {
+        stage('Setup Custom Actions') {
+            steps {
+                script {
+                    // Register custom actions
+                    registerAction('npm-install', { Map inputs ->
+                        def directory = inputs.directory ?: '.'
+                        
+                        echo "Running npm install in ${directory}"
+                        dir(directory) {
+                            sh 'npm install'
+                        }
+                    })
+                    
+                    registerAction('npm-test', { Map inputs ->
+                        def directory = inputs.directory ?: '.'
+                        
+                        echo "Running npm test in ${directory}"
+                        dir(directory) {
+                            sh 'npm test'
+                        }
+                    })
+                }
+            }
+        }
+        
+        stage('Run GitHub Actions Workflow') {
+            steps {
+                script {
+                    // Execute the GitHub Actions workflow
+                    runGitHubWorkflow(
+                        workflowPath: '.github/workflows/ci.yml',
+                        jobId: 'build'
+                    )
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: checkout
+        with:
+          ref: main
+
+      - name: Set up JDK 11
+        uses: setup-java
+        with:
+          java_version: 11
+
+      - name: Build with Maven
+        uses: maven-build
+        with:
+          command: "clean package"
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Build Docker image
+        uses: docker-build
+        with:
+          imageName: myapp:latest
+          dockerfile: Dockerfile
+          context: .
+
+      - name: Push Docker image
+        uses: docker-push
+        with:
+          imageName: myapp:latest
