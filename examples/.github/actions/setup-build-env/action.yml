@@ -1,0 +1,41 @@
+name: Setup Build Environment
+description: Sets up Java and Node.js environment for build
+
+inputs:
+  java_version:
+    description: 'Java version to use'
+    required: true
+    default: '11'
+  node_version:
+    description: 'Node.js version to use'
+    required: false
+    default: '16'
+  python_version:
+    description: 'Python version to use'
+    required: false
+    default: '3.10'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up JDK
+      uses: setup-java
+      with:
+        java_version: ${{ inputs.java_version }}
+    
+    - name: Set up Node.js
+      uses: setup-node
+      with:
+        node_version: ${{ inputs.node_version }}
+        
+    - name: Set up Python
+      uses: setup-python
+      with:
+        python_version: ${{ inputs.python_version }}
+        
+    - name: Verify installations
+      run: |
+        echo "Java, Node.js and Python setup complete"
+        java -version
+        node -version
+        python --version 

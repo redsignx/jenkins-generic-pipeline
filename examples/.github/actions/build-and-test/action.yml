@@ -1,0 +1,43 @@
+name: Build and Test
+description: Builds and tests a Java application with Maven
+
+inputs:
+  maven_goals:
+    description: 'Maven goals to execute'
+    required: false
+    default: 'clean verify'
+  skip_tests:
+    description: 'Whether to skip tests'
+    required: false
+    default: 'false'
+  additional_options:
+    description: 'Additional Maven options'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Check for Maven wrapper
+      run: |
+        if [ -f "./mvnw" ]; then
+          echo "Using Maven wrapper"
+          chmod +x ./mvnw
+        else
+          echo "Using system Maven"
+        fi
+    
+    - name: Build with Maven
+      uses: maven-build
+      with:
+        command: "${{ inputs.maven_goals }} ${{ inputs.skip_tests == 'true' && '-DskipTests' || '' }} ${{ inputs.additional_options }}"
+        
+    - name: Generate coverage report
+      run: |
+        if [ "${{ inputs.skip_tests }}" != "true" ]; then
+          echo "Generating coverage report..."
+          # This would typically run a coverage tool
+          # For example: ./mvnw jacoco:report
+        else
+          echo "Skipping coverage report generation as tests are disabled"
+        fi 

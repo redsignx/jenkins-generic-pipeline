@@ -1,0 +1,77 @@
+plugins {
+    id 'groovy'
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    // Jenkins共享库依赖
+    compileOnly 'org.jenkins-ci.main:jenkins-core:2.346.3'
+    compileOnly 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.24'
+    compileOnly 'org.jenkins-ci.plugins.workflow:workflow-cps:2.94'
+    
+    // Groovy
+    implementation 'org.codehaus.groovy:groovy-all:3.0.9'
+    
+    // YAML解析
+    implementation 'org.yaml:snakeyaml:1.30'
+    
+    // 测试框架
+    testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
+    testImplementation 'cglib:cglib-nodep:3.3.0'
+    testImplementation 'org.objenesis:objenesis:3.2'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src', 'vars']
+        }
+        resources {
+            srcDirs = ['resources']
+        }
+    }
+    test {
+        groovy {
+            srcDirs = ['src/test/groovy']
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+// 创建JAR文件
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': 'Jenkins Generic Pipeline',
+            'Implementation-Version': '1.0.0'
+        )
+    }
+}
+
+// 创建源代码JAR文件
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+// 将源代码JAR添加到构建任务中
+artifacts {
+    archives sourcesJar
+} 

@@ -1,0 +1,33 @@
+name: Composite Action Example
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build with composite actions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: checkout
+        
+      # 假设存在一个名为 'setup-build-env' 的组合动作
+      - name: Setup build environment
+        uses: setup-build-env
+        with:
+          java_version: 11
+          node_version: 16
+          
+      # 假设存在一个名为 'build-and-test' 的组合动作
+      - name: Build and test
+        uses: build-and-test
+        with:
+          maven_goals: "clean verify"
+          skip_tests: false
+          
+      - name: Upload artifacts
+        run: echo "Uploading artifacts..." 
