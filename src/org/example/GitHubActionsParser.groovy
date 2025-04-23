@@ -63,6 +63,31 @@ class GitHubActionsParser implements Serializable {
     }
     
     /**
+     * Get parallel step groups from a job
+     * @param job The job definition
+     * @return Map of parallel step groups
+     */
+    Map getParallelSteps(Map job) {
+        // 检查job中是否有parallel配置
+        if (job.parallel instanceof Map) {
+            return job.parallel
+        }
+        return null
+    }
+    
+    /**
+     * Get matrix configuration from a job
+     * @param job The job definition
+     * @return Matrix configuration map or null if not defined
+     */
+    Map getMatrix(Map job) {
+        if (job.strategy instanceof Map && job.strategy.matrix instanceof Map) {
+            return job.strategy.matrix
+        }
+        return null
+    }
+    
+    /**
      * Get the name of an action
      * @param step The step definition
      * @return The action name
@@ -78,5 +103,55 @@ class GitHubActionsParser implements Serializable {
      */
     Map getActionInputs(Map step) {
         return step.with ?: [:]
+    }
+    
+    /**
+     * Get the needs dependencies for a job
+     * @param job The job definition
+     * @return List of job dependencies
+     */
+    List getJobDependencies(Map job) {
+        if (job.needs instanceof List) {
+            return job.needs
+        } else if (job.needs instanceof String) {
+            return [job.needs]
+        }
+        return []
+    }
+    
+    /**
+     * Get the condition for a job
+     * @param job The job definition
+     * @return The job condition expression or null if not defined
+     */
+    String getJobCondition(Map job) {
+        return job.if
+    }
+    
+    /**
+     * Get the condition for a step
+     * @param step The step definition
+     * @return The step condition expression or null if not defined
+     */
+    String getStepCondition(Map step) {
+        return step.if
+    }
+    
+    /**
+     * Get environment variables for a job
+     * @param job The job definition
+     * @return Map of environment variables
+     */
+    Map getJobEnvironment(Map job) {
+        return job.env ?: [:]
+    }
+    
+    /**
+     * Get environment variables for a step
+     * @param step The step definition
+     * @return Map of environment variables
+     */
+    Map getStepEnvironment(Map step) {
+        return step.env ?: [:]
     }
 }
