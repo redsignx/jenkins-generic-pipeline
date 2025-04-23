@@ -1,1 +1,0 @@
-# jenkins-generic-pipeline
